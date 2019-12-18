@@ -139,4 +139,8 @@ for destroyed in zip_longest(*angle_lists, fillvalue=None):
         count += len(ds)
         continue
 
-    print(ds[200 - count - 1])
+    ans = ds[200 - count - 1]
+    break
+
+print(ans)
+print(ans[0][1] * 100 + ans[0][0])
