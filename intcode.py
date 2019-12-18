@@ -44,21 +44,35 @@ class IntCode:
             # relative mode
             return self.code[value + self.base]
 
-    def get_values(self, params):
+    def get_values(self, modes):
         return [
-            self.get_value(param, self.code[self.idx + i])
-            for i, param in enumerate(params, start=1)
+            self.get_value(mode, self.code[self.idx + i])
+            for i, mode in enumerate(modes, start=1)
         ]
 
-    def get_params(self, value, n_params):
+    def get_modes(self, value, n_modes):
         value = value // 100
 
-        params = []
-        for _ in range(n_params):
-            params.append(int(value % 10))
+        modes = []
+        for _ in range(n_modes):
+            modes.append(int(value % 10))
             value //= 10
         
-        return params
+        return modes
+
+    def write_to(self, mode, param, value):
+        """
+        write value to the location given by param, based on the mode.
+        """
+        if mode == 0:
+            # position mode
+            self.code[param] = value
+        elif mode == 1:
+            # cannot be in immediate mode
+            raise ValueError
+        elif mode == 2:
+            # relative mode
+            self.code[param + self.base] = value
 
     def run(self, inputs=None, print_outputs=True):
         input_idx = 0
@@ -69,21 +83,19 @@ class IntCode:
             value = self.code[self.idx]
             opcode = value % 100
 
-            # opcode, params = parse_value(code[idx])
-
             if opcode == 1:
                 # Day 2
-                params = self.get_params(value, 3)
-                values = self.get_values(params)
-                self.code[self.code[self.idx+3]] = values[0] + values[1]
+                modes = self.get_modes(value, 3)
+                values = self.get_values(modes)
+                self.write_to(modes[2], self.code[self.idx+3], values[0] + values[1])
 
                 self.idx += 4
 
             elif opcode == 2:
                 # Day 2
-                params = self.get_params(value, 3)
-                values = self.get_values(params)
-                self.code[self.code[self.idx+3]] = values[0] * values[1]
+                modes = self.get_modes(value, 3)
+                values = self.get_values(modes)
+                self.write_to(modes[2], self.code[self.idx+3], values[0] * values[1])
 
                 self.idx += 4
 
@@ -95,14 +107,16 @@ class IntCode:
 
                 input_val = inputs[input_idx]
                 input_idx += 1
-                self.code[self.code[self.idx+1]] = input_val
+
+                modes = self.get_modes(value, 1)
+                self.write_to(modes[0], self.code[self.idx+1], input_val)
 
                 self.idx += 2
 
             elif opcode == 4:
                 # Day 5
-                params = self.get_params(value, 1)
-                v = self.get_value(params[0], self.code[self.idx+1])
+                modes = self.get_modes(value, 1)
+                v = self.get_value(modes[0], self.code[self.idx+1])
                 outputs.append(v)
                 if print_outputs:
                     print(v)
@@ -111,8 +125,8 @@ class IntCode:
 
             elif opcode == 5:
                 # Day 5
-                params = self.get_params(value, 2)
-                values = self.get_values(params)
+                modes = self.get_modes(value, 2)
+                values = self.get_values(modes)
                 if values[0] != 0:
                     self.idx = values[1]
                 else:
@@ -120,8 +134,8 @@ class IntCode:
 
             elif opcode == 6:
                 # Day 5
-                params = self.get_params(value, 2)
-                values = self.get_values(params)
+                modes = self.get_modes(value, 2)
+                values = self.get_values(modes)
                 if values[0] == 0:
                     self.idx = values[1]
                 else:
@@ -129,30 +143,28 @@ class IntCode:
 
             elif opcode == 7:
                 # Day 5
-                params = self.get_params(value, 3)
-                values = self.get_values(params)
-                if values[0] < values[1]:
-                    self.code[self.code[self.idx+3]] = 1
-                else:
-                    self.code[self.code[self.idx+3]] = 0
+                modes = self.get_modes(value, 3)
+                values = self.get_values(modes)
+
+                compare_val = 1 if values[0] < values[1] else 0
+                self.write_to(modes[2], self.code[self.idx+3], compare_val)
 
                 self.idx += 4
 
             elif opcode == 8:
                 # Day 5
-                params = self.get_params(value, 3)
-                values = self.get_values(params)
-                if values[0] == values[1]:
-                    self.code[self.code[self.idx+3]] = 1
-                else:
-                    self.code[self.code[self.idx+3]] = 0
+                modes = self.get_modes(value, 3)
+                values = self.get_values(modes)
+
+                compare_val = 1 if values[0] == values[1] else 0
+                self.write_to(modes[2], self.code[self.idx+3], compare_val)
 
                 self.idx += 4
 
             elif opcode == 9:
                 # Day 9
-                params = self.get_params(value, 1)
-                values = self.get_values(params)
+                modes = self.get_modes(value, 1)
+                values = self.get_values(modes)
                 self.base += values[0]
 
                 self.idx += 2
