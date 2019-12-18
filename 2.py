@@ -1,6 +1,6 @@
 from itertools import product
 
-from intcode import read_code, run_program
+from intcode_old import read_code, run_program
 
 def init_code(code, noun, verb):
     code[1] = noun

@@ -1,5 +1,5 @@
 from itertools import permutations, product
-from intcode import read_code, run_program
+from intcode_old import read_code, run_program
 
 code = read_code(open('../data/input7').read())
 
