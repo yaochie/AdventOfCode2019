@@ -46,7 +46,7 @@ for i, line in enumerate(data):
         if char == '#':
             asteroids.append((i, j))
 
-print(asteroids)
+# print(asteroids)
 
 # print(asteroids)
 print("# asteroids:", len(asteroids))
