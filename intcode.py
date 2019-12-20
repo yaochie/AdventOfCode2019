@@ -31,6 +31,9 @@ class IntCode:
         return IntCode.load_code(open(filename, 'r').read())
 
     def copy(self):
+        """
+        Returns a fresh copy of the code, **in the same state**.
+        """
         return IntCode(self.code)
 
     def get_value(self, mode, value):
@@ -75,6 +78,14 @@ class IntCode:
             self.code[param + self.base] = value
 
     def run(self, inputs=None, print_outputs=True):
+        """
+        Resumes the code from the current instruction, using the
+        given 'inputs' for any required inputs.
+
+        When it halts, the outputs from this run are returned.
+
+        If the program has terminated, the 'terminated' flag is set.
+        """
         input_idx = 0
         outputs = []
 

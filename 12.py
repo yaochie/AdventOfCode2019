@@ -1,8 +1,6 @@
 from collections import namedtuple
 import copy
 
-import matplotlib.pyplot as plt
-
 data = open('../data/input12').readlines()
 
 # data = """<x=-1, y=0, z=2>
