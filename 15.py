@@ -85,33 +85,6 @@ print(code.terminated)
 
 draw(world, location)
 
-# # bfs
-# queue = deque([(0, 0)])
-
-# # mapping from location to distance
-# node = (0, 0)
-# visited = {node: 0}
-
-# done = False
-# while len(queue) > 0 and not done:
-#     node = queue.popleft()
-#     curr_dist = visited[node]
-#     for d in [1, 2, 3, 4]:
-#         next_node = next_loc(node, d)
-
-#         if next_node in world and next_node not in visited:
-#             if world[next_node] == 2:
-#                 # done!
-#                 print(curr_dist + 1)
-#                 done = True
-#                 break
-
-#             if world[next_node] == 0:
-#                 continue
-
-#             visited[next_node] = curr_dist + 1
-#             queue.append(next_node)
-
 def bfs(start_node, oxygen=True):
     queue = deque([start_node])
 

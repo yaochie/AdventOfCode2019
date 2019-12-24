@@ -12,6 +12,9 @@ print(len(data))
 
 arr = data.copy()
 
+def format_arr(arr):
+    return ''.join(str(x) for x in arr)
+
 def fft(arr, n_phases=100):
     arr = arr.copy()
     start_time = time.time()
@@ -40,10 +43,12 @@ def fft(arr, n_phases=100):
 
     return arr
 
-def fft_inplace(arr, n_phases=100):
+def fft_inplace(arr, n_phases=100, verbose=False):
     arr = arr.copy()
     start_time = time.time()
 
+    if verbose:
+        print(format_arr(arr))
     for _ in range(n_phases):
         for i in range(len(arr)):
             inc = i + 1
@@ -62,48 +67,55 @@ def fft_inplace(arr, n_phases=100):
 
             arr[i] = int(str(value)[-1])
 
-            # if i % 500 == 0:
-            #     print(i, end='..', flush=True)
-        # print(arr[:8])
-        # print(''.join(str(x) for x in arr))
+        if verbose:
+            print(format_arr(arr))
 
     print("{:.2f}s".format(time.time() - start_time))
 
     return arr
 
-def fft_inplace_faster(arr, n_phases=100):
-    arr = arr.copy()
-    start_time = time.time()
+def fft_end(arr, start_idx, n_phases=100, verbose=False):
+    """
+    We can quickly compute values in the last half of the array,
+    since they just follow the following recursion:
+
+    new[-1] = old[-1]
+    new[i] = (old[i] + new[i+1]) % 10
+    """
+    if start_idx < len(arr) // 2 + 1:
+        raise ValueError
+
+    arr_end = arr[start_idx:].copy()
+
+    if verbose:
+        print(format_arr(arr_end))
 
     for p in range(n_phases):
-        for i in range(len(arr)):
-            inc = i + 1
-            value = 0
-            
-            idx = inc - 1
-            for j in range(inc):
-                value += sum(arr[idx+j::4*inc])
+        print(p, end='..', flush=True)
+        for j in range(len(arr_end) - 2, -1, -1):
+            arr_end[j] = (arr_end[j] + arr_end[j+1]) % 10
+        
+        if verbose:
+            print(format_arr(arr_end))
 
-            idx += 2 * inc
-            for j in range(inc):
-                value -= sum(arr[idx+j::4*inc])
-
-            arr[i] = int(str(value)[-1])
-
-    print("{:.2f}s".format(time.time() - start_time))
-
-    return arr
+    print()
+    return arr_end
 
 # part 1
-print(''.join(str(x) for x in fft_inplace(arr)[:8]))
-# print(''.join(str(x) for x in fft_inplace_faster(arr)[:8]))
-# fft_inplace(arr, n_phases=5)
+arr_100 = fft_inplace(arr)
+print(format_arr(arr_100[:8]))
+
+print()
 
 # part 2
-# big_arr = arr * 2
-# offset = int(''.join(str(x) for x in big_arr[:7]))
-# print(offset)
+print("part 2")
 
-# big_arr = fft_inplace(big_arr, n_phases=100)
+offset = int(''.join(str(x) for x in arr[:7]))
+print("Offset:", offset)
+print("fraction:", offset / (len(arr) * 10000))
 
-# print(''.join(str(x) for x in big_arr[offset : offset+7]))
+# our offset 
+big_arr = arr * 10000
+
+arr_end = fft_end(big_arr, offset)
+print(format_arr(arr_end[:8]))
