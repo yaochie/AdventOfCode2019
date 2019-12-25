@@ -13,6 +13,15 @@ def read_code(string):
     return code
 
 
+def to_ascii(line):
+    """
+    Writes a string as ASCII code. Appends a newline at the end.
+    """
+    data = [ord(c) for c in line]
+    data.append(10)
+    return data
+
+
 class IntCode:
     def __init__(self, code):
         self.code = code
@@ -34,7 +43,7 @@ class IntCode:
         """
         Returns a fresh copy of the code, **in the same state**.
         """
-        return IntCode(self.code)
+        return IntCode(self.code.copy())
 
     def get_value(self, mode, value):
         if mode == 0:
