@@ -86,7 +86,7 @@ class IntCode:
             # relative mode
             self.code[param + self.base] = value
 
-    def run(self, inputs=None, print_outputs=True):
+    def run(self, inputs=None, print_outputs=False):
         """
         Resumes the code from the current instruction, using the
         given 'inputs' for any required inputs.
